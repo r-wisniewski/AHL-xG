@@ -10,7 +10,7 @@ command: python ahl_xgf_scrape.py <latestGameID#>
 
 2. With the data in a SQL database, we can calulate the xG of individual x,y locations. The ahl_xgf_sql_smoothing.py script ONLY calculates xG based on that particular x,y point. Subsequently, a smoothing box of size x +/- var,y +/- var (with var > 1) parses each x,y coordinate. This results in lower peaks but
 higher valleys.
-command: python ahl_xgf_*.py <latestGameID#>
+command: python ahl_xgf_smoothing.py <latestGameID#>
 
 3. This step is OPTIONAL, use the xg_plot.py to display the results of step 2. The heat map will visually show the xG values
 command: python xg_plot.py
@@ -25,3 +25,10 @@ python ahl_xgf_scrape.py <latestGameID#>; python ahl_xgf_*.py <latestGameID#>; p
 
 # Dependencies
 
+1. Python3 with packages requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
+2. A postgres SQL Database
+3. A SQL GUI such as selectron
+
+# Future Work
+
+I would greatly appreciate feedback regarding this code. This project is far from perfect and could definitely be fine tuned in many many ways. 
