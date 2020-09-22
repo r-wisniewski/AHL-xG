@@ -54,3 +54,5 @@ pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktnik
 # Future Work
 
 I would greatly appreciate feedback regarding this code. This project is far from perfect and could definitely be fine tuned in many many ways. 
+
+Expanding on the simple xG model presented, incorporating strengths (5x5, 5v4, etc...) would be a plus. 
