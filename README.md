@@ -27,6 +27,8 @@ command: python ahl_xgf_sql_smoothing.py <latestGameID#>
 3. This step is OPTIONAL, use the xg_plot.py to display the results of step 2. The heat map will visually show the xG values. 
 command: python xg_plot.py
 
+Here's what an example heatmap looks like ![Heatmap](https://imgur.com/wwf9Zyf)
+
 4. The fourth, last, and most important step. Run the ahl_xgf_sql_accuracy.py script to compare the actual game score vs what the xG predicts it to be. The 'ahlxgfaccuracy' table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
 command: python ahl_xgf_sql_accuracy.py <latestGameID#>
 
