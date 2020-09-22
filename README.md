@@ -36,8 +36,12 @@ python ahl_xgf_sql_scrape.py <latestGameID#>; python ahl_xgf_sql_smoothing.py <l
 # Dependencies
 
 1. Python3 with packages requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
-2. A postgres SQL Database
-3. A SQL GUI such as selectron
+```
+pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
+```
+2. A postgres SQL Database is required.
+3. A SQL GUI such as [Sqlectron](https://sqlectron.github.io/).
+
 
 # Future Work
 
