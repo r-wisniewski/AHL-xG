@@ -5,7 +5,6 @@ the datapoint. Use a smoothing swath/square to smooth the results.
 """
 
 from datascience import Table
-from datascience.predicates import are
 import psycopg2
 
 # CONNECT TO POSTGRES DB #
