@@ -18,7 +18,9 @@ are commented out in the *_sql.py scripts.
 
 1. The first step is scraping data from the AHL website.
 The ahl_xgf_sql_scrape.py script gets all x,y shot & goal locations from the AHL website and puts it into a sql table named 'ahlxgf'. This table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
+```
 command: python ahl_xgf_sql_scrape.py <latestGameID#>
+```
 
 2. With the data in a SQL database, we can calulate the xG of individual x,y locations. The ahl_xgf_sql_smoothing.py script ONLY calculates xG based on that particular x,y point. Subsequently, a smoothing box of size x +/- var,y +/- var (with var > 1) parses each x,y coordinate. This results in lower peaks but
 higher valleys. The 'ahlxgfCalc' table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
