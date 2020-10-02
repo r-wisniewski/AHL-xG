@@ -62,42 +62,23 @@ records = cursor.fetchall()
 # record[0] == x value. Out from the net. 0 to max
 for record in records:
     #xG's calculated using only data at that particular point
-    if record[0] < 50 and (record[1] < 100 or record[1] > 200):
-        query = '''SELECT * FROM ahlxgf WHERE XLocation = %s INTERSECT SELECT * FROM ahlxgf WHERE YLocation = %s;'''
-        cursor.execute(query, (record[0],record[1]))
-        matching_records = cursor.fetchall()
-        goal = 0
-        num_rows = len(matching_records) 
-        for row in matching_records:
-            if row[2] == 1:
-                goal += 1
-        if num_rows == 0:
-            xG = 0
-        else:
-            xG = goal/num_rows
-        print("Expected goals for (%i , %i) is %6.5f" % (record[0],record[1],xG))
-        #insert the calculated xG into the table for this record
-        insert_query = '''UPDATE ahlxgCalc SET xG = %s WHERE (XLocation) = (%s) AND (YLocation) = (%s);'''
-        cursor.execute(insert_query, (xG,record[0],record[1]))
-        connection.commit()
+    query = '''SELECT * FROM ahlxgf WHERE XLocation = %s INTERSECT SELECT * FROM ahlxgf WHERE YLocation = %s;'''
+    cursor.execute(query, (record[0],record[1]))
+    matching_records = cursor.fetchall()
+    goal = 0
+    num_rows = len(matching_records) 
+    for row in matching_records:
+        if row[2] == 1:
+            goal += 1
+    if num_rows == 0:
+        xG = 0
     else:
-        query = '''SELECT * FROM ahlxgf WHERE XLocation = %s INTERSECT SELECT * FROM ahlxgf WHERE YLocation = %s;'''
-        cursor.execute(query, (record[0],record[1]))
-        matching_records = cursor.fetchall()
-        goal = 0
-        num_rows = len(matching_records) 
-        for row in matching_records:
-            if row[2] == 1:
-                goal += 1
-        if num_rows == 0:
-            xG = 0
-        else:
-            xG = goal/num_rows
-        print("Expected goals for (%i , %i) is %6.5f" % (record[0],record[1],xG))
-        #insert the calculated xG into the table for this record
-        insert_query = '''UPDATE ahlxgCalc SET xG = %s WHERE (XLocation) = (%s) AND (YLocation) = (%s);'''
-        cursor.execute(insert_query, (xG,record[0],record[1]))
-        connection.commit()
+        xG = goal/num_rows
+    print("Expected goals for (%i , %i) is %6.5f" % (record[0],record[1],xG))
+    #insert the calculated xG into the table for this record
+    insert_query = '''UPDATE ahlxgCalc SET xG = %s WHERE (XLocation) = (%s) AND (YLocation) = (%s);'''
+    cursor.execute(insert_query, (xG,record[0],record[1]))
+    connection.commit()
 
 #Smooth out each calculated data point with a averaging function that takes values around the point.
 #The swatch is var*2 wide and high
