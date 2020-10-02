@@ -8,6 +8,7 @@ import requests
 import json
 import psycopg2
 import sys
+import numpy as np
 
 #build dataset with data from first game w/ shot and goal data
 #Game is from Oct 6, 2017
@@ -68,20 +69,131 @@ for n in range(first_game_id,last_game+1,1):
     
     resp = requests.get(fullurl)
         
-    #format resp and resp2 to be json responses. Cut the beggining and end portions off
+    #format resp and resp2 to be json responses. Cut the beginning and end portions off
     resp = resp.text[:-1]
     resp = resp[21:]
-
-    total_expected_goals = 0
-    game_goals = 0
     #this response is json
     try:
         resp = json.loads(resp)
+
+        resp1 = resp
+        resp2 = resp
+
+        #Team1 is the team that the strengths will be calculated for
+        #Team2 is just the inverse of Team1
+        #ie, if Team1 is on the PP (strength = +1), Team2 must have strength == -1 (5v4 PK)
+        team = []
         for i in resp:
+            event = i.get("event")
+            if event == "goalie_change":
+                details = i.get("details")
+                team_id = details.get("team_id")
+                team.append(team_id) 
+        Team1 = int(team[0])
+        Team2 = int(team[1])
+
+        # Create and populate array with strengths
+        # 3 20 min periods plus possible 5 min OT (for regular season) = 65 min * 60 secs = 3900 secs
+        # gametime == [0,1,2.......,3899]
+        gametime = np.arange(0,3900)
+        zero_array = np.zeros(3900)
+        #combine arrays into a 2D array where a row is the time combined with the strength at that moment 
+        #in time (for Team1)
+        # Access as: strengths[row,col]
+        strengths = np.vstack((gametime, zero_array)).T
+
+        total_expected_goals = 0
+        game_goals = 0
+
+        # First run through the events, we create and populate the strength array
+        # Strengths are calculated as the advantage or disadvantage of Team 1
+        # ie, +1 can indicate 5v4 OR 4v3 in favor of Team1
+        for i in resp1:
             #get the event type and assume we have all metadata
             event = i.get("event")
+
+            ######### calculate strengths at each moment in time ########
+
+            #keep the time of (the last penalty + penalty length) 
+            last_penalty_time = 0
+
+            if event == "penalty":
+                details = i.get("details")
+                time_raw = details.get("time").split(":")
+                period = details.get("period")
+                period = int(period.get("id"))
+                #get time in seconds of the penalty
+                time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
+                length = details.get("minutes").split(".")
+                length = int(length[0])
+
+                against_team = details.get("againstTeam")
+                against_team = against_team.get("id")
+                against_team = int(against_team)
+                #Team1 goes on the PP
+                if against_team == Team2:
+                    if length == 2:
+                        last_penalty_time = time + 120
+                        #set the strength 
+                        for i in range(121):
+                            if int(strengths[time+i,1]) < 2:
+                                strengths[time+i,1] += 1
+                    if length == 5:
+                        last_penalty_time = time + 300
+                        for i in range(301):
+                            if int(strengths[time+i,1]) < 2:
+                                strengths[time+i,1] += 1
+                
+                #Team1 goes on the PK
+                elif against_team == Team1:
+                    if length == 2:
+                        last_penalty_time = time + 120
+                        #set the strength 
+                        for i in range(121):
+                            if int(strengths[time+i,1]) > -2:
+                                strengths[time+i,1] -= 1
+                    if length == 5:
+                        last_penalty_time = time + 300
+                        for i in range(301):
+                            if int(strengths[time+i,1]) > -2:
+                                strengths[time+i,1] -= 1
+
+            #we only care about PP goals becuase SH or EV goals don't change strength
+            elif event == "goal":
+                details = i.get("details")
+                pp_goal = details.get("properties")
+                pp_goal = int(pp_goal.get("isPowerPlay"))
+                team_id = details.get("team")
+                team_id = int(team_id.get("id"))
+                if pp_goal == 1:
+                    #time of goal in seconds
+                    time_raw = details.get("time").split(":")
+                    period = details.get("period")
+                    period = int(period.get("id"))
+                    time_of_goal = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
+
+                    #time of previous penalty + length of penalty is last_penalty_time
+                    #remove the additional "strengths" after a PP goal is scored
+                    #ie, if Team1 goes on the PP at 10:00 and the PP goal is scored at 8:50, then remove
+                    #the additional +1 strengths from 8:51 to 8:00
+                    if team_id == Team1:
+                        for i in range(time_of_goal+1,last_penalty_time+1):
+                            if int(strengths[i,1]) > -2:
+                                strengths[i,1] -= 1
+
+                    elif team_id == Team2:
+                        for i in range(time_of_goal+1,last_penalty_time+1):
+                            if int(strengths[i,1]) < 2:
+                                strengths[i,1] += 1
+        # 2nd run through the events. Stengths are calculated. Now we must figure out whether the even is
+        # a goal or shot. Find the xG of the event based on strength and then add to ahlxgaccuracy table.
+        for i in resp2:
+            #get the event type and assume we have all metadata
+            event = i.get("event")
+
             if event == "goal":
                 details = i.get("details")
+
                 #set the X value relative to x distance from the net
                 # this is because the home team's x value is (max X)/2 + true X
                 # max x = 593/2
@@ -96,15 +208,26 @@ for n in range(first_game_id,last_game+1,1):
                 #since origin is at top left we must flip all the y values
                 yLocation = details.get("yLocation")
                 yLocation = 300 - yLocation
-                
-                #get the xG for this goals x,y location
-                query = """ SELECT xG FROM ahlxgCalc WHERE XLocation = %s AND YLocation = %s """
-                cursor.execute(query, (xLocation,yLocation))
+
+                #get time of goal and match to strength
+                time_raw = details.get("time").split(":")
+                period = details.get("period")
+                period = int(period.get("id"))
+                event_time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
+                event_strength = strengths[event_time,1]
+
+                table_name = ahlxgCalc+str(event_strength)
+
+                #get the xG from the correct strength table
+                query = """ SELECT xG FROM %s WHERE XLocation = %%s AND YLocation = %%s """
+                cursor.execute(query % table_name, [xLocation,yLocation])
                 expected_goals = cursor.fetchone()
                 total_expected_goals += expected_goals[0]
                 game_goals += 1
+            
             elif event == "shot":
                 details = i.get("details")
+
                 #set the X value relative to x distance from the net
                 # this is because the home team's x value is (max X)/2 + true X
                 # max x = 593/2
@@ -119,10 +242,19 @@ for n in range(first_game_id,last_game+1,1):
                 #since origin is at top left we must flip all the y values
                 yLocation = details.get("yLocation")
                 yLocation = 300 - yLocation
+
+                #get time of goal and match to strength
+                time_raw = details.get("time").split(":")
+                period = details.get("period")
+                period = int(period.get("id"))
+                event_time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
+                event_strength = strengths[event_time,1]
+
+                table_name = ahlxgCalc+str(event_strength+2)
                 
-                #get the xG for this goals x,y location
-                query = """ SELECT xG FROM ahlxgCalc WHERE XLocation = %s AND YLocation = %s """
-                cursor.execute(query, (xLocation,yLocation))
+                #get the xG from the correct strength table
+                query = """ SELECT xG FROM %s WHERE XLocation = %%s AND YLocation = %%s """
+                cursor.execute(query % table_name, [xLocation,yLocation])
                 expected_goals = cursor.fetchone()
                 total_expected_goals += expected_goals[0]
         
@@ -132,7 +264,6 @@ for n in range(first_game_id,last_game+1,1):
         cursor.execute(values, (n,total_expected_goals,game_goals,diff))
         connection.commit()
         print("Game ID: %i, xG: %f, Goals: %i, Diff: %f" % (n,total_expected_goals,game_goals,diff))
-
     except:
         pass
 

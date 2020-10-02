@@ -23,10 +23,19 @@ command: python ahl_xgf_sql_scrape.py <latestGameID#>
 ```
 
 2. With the data in a SQL database, we can calulate the xG of individual x,y locations. The ahl_xgf_sql_smoothing.py script ONLY calculates xG based on that particular x,y point. Subsequently, a smoothing box of size x +/- var,y +/- var (with var > 1) parses each x,y coordinate. This results in lower peaks but
-higher valleys. The 'ahlxgfCalc' table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
+higher valleys. The 'ahlxgfCalc' tables needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
 ```
 command: python ahl_xgf_sql_smoothing.py <latestGameID#>
 ```
+Important note: This branch takes into account strengths (ie, even strength, 5v4 PP, etc...). 
+| Table Name    | Strenghts represented |
+| ------------- | --------------------- |
+| ahlxgfCalc0   | 5v3, up by 2 players  |
+| ahlxgfCalc1   | 5v4 or 4v3, up by 1 player  |
+| ahlxgfCalc2   | 5v5, even strength  |
+| ahlxgfCalc3   | 4v5, down by 1 player |
+| ahlxgfCalc4   | 3v5, down by 2 players  |
+
 3. This step is OPTIONAL, use the xg_plot.py to display the results of step 2. The heat map will visually show the xG values. 
 ```
 command: python xg_plot.py
@@ -56,5 +65,3 @@ pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktnik
 # Future Work
 
 I would greatly appreciate feedback regarding this code. This project is far from perfect and could definitely be fine tuned in many many ways. 
-
-Expanding on the simple xG model presented, incorporating strengths (5x5, 5v4, etc...) would be a plus. 
