@@ -22,28 +22,33 @@ try:
 except (Exception, psycopg2.Error) as error :
     print ("Error while connecting to PostgreSQL", error)
 
-#Grab every xG row/datapoint from the database
-cursor.execute("SELECT * FROM ahlxgCalc;")
-records = cursor.fetchall()
+for i in range(0,5):
+    #set the table name here
+    table_name = "ahlxgCalc"+str(i)
 
-#Create numpy array that will be populated by our records
-#shape = (rows,columns) in our case rows are the y's and columns are the x's
-rows = 297
-cols = 301
-A = np.ndarray(shape=(rows,cols), dtype=float)
+    #Grab every xG row/datapoint from the database
+    cursor.execute("SELECT * FROM %s;" % table_name)
+    records = cursor.fetchall()
 
-for record in records:
-    #A[x][y] = xG
-    A[record[0],record[1]] = record[2]
-    print("Array element (%i,%i) is %6.5f" % (record[0],record[1],record[2]))
-    
-plt.xlabel('Distance between the boards')
-plt.ylabel('Distance from net')
-title = 'xGF for AHL shot location'
-plt.title(title)
-im = plt.imshow(A, cmap='hot')
-plt.colorbar(im)
-plt.show()
+    #Create numpy array that will be populated by our records
+    #shape = (rows,columns) in our case rows are the y's and columns are the x's
+    rows = 297
+    cols = 301
+    A = np.ndarray(shape=(rows,cols), dtype=float)
+
+    for record in records:
+        #A[x][y] = xG
+        A[record[0],record[1]] = record[2]
+        print("Array element (%i,%i) is %6.5f" % (record[0],record[1],record[2]))
+        
+    plt.xlabel('Distance between the boards')
+    plt.ylabel('Distance from net')
+    i = str(i-2)
+    title = 'xGF for AHL shots at Strength %s' % i
+    plt.title(title)
+    im = plt.imshow(A, cmap='hot')
+    plt.colorbar(im)
+    plt.show()
     
 #closing database connection.
 if(connection):
