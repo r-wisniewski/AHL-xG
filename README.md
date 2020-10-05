@@ -14,7 +14,7 @@ Before you begin, step your SQL database. Note the lines
                                   port = <insert sql server port number>,
                                   database = <insert database name>)
 ```
-are commented out in the *_sql.py scripts.
+are commented out in the python scripts.
 
 1. The first step is scraping data from the AHL website.
 The ahl_xgf_sql_scrape.py script gets all x,y shot & goal locations from the AHL website and puts it into a sql table named 'ahlxgf'. This table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
@@ -28,13 +28,13 @@ higher valleys. The 'ahlxgfCalc' tables needs to be created in the sql database 
 command: python ahl_xgf_sql_smoothing.py <latestGameID#>
 ```
 Important note: This branch takes into account strengths (ie, even strength, 5v4 PP, etc...). 
-| Table Name    | Strenghts represented |
-| ------------- | --------------------- |
-| ahlxgfCalc0   | 5v3, up by 2 players  |
-| ahlxgfCalc1   | 5v4 or 4v3, up by 1 player  |
-| ahlxgfCalc2   | 5v5, even strength  |
-| ahlxgfCalc3   | 4v5, down by 1 player |
-| ahlxgfCalc4   | 3v5, down by 2 players  |
+| Table Name    | Strengths (numerical) | Strenghts represented |
+| ------------- | --- | --------------------- |
+| ahlxgfCalc0   | -2 | 3v5, down by 2 players  |
+| ahlxgfCalc1   | -1 | 4v5, down by 1 player |
+| ahlxgfCalc2   | 0 | 5v5, even strength  |
+| ahlxgfCalc3   | +1 | 5v4 or 4v3, up by 1 player |
+| ahlxgfCalc4   | +2 | 5v3, up by 2 players  |
 
 3. This step is OPTIONAL, use the xg_plot.py to display the results of step 2. The heat map will visually show the xG values. 
 ```
