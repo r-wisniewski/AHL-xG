@@ -78,7 +78,9 @@ for i in range(0,5):
     #Grab every datapoint from the database and run the calculation for each stregnth
     query = cursor.execute("SELECT * FROM %s;" % table_name)
     records = cursor.fetchall()
-
+    
+    xG = 0
+    
     # Grab each datapoint and grab the N nearest neighbors from the database while separating out strengths
     # From the N nearest neighbors, calculate
     # record[1] == y value. From 0 (left) to 300 (right). Left and right of the goalie
@@ -107,6 +109,10 @@ for i in range(0,5):
     #set the table name here
     table_name = "ahlxgCalc"+str(i)
 
+    #Grab every datapoint from the database and run the calculation for each stregnth
+    query = cursor.execute("SELECT * FROM %s;" % table_name)
+    records = cursor.fetchall()
+    
     xG = 0
 
     #Smooth out each calculated data point with a averaging function that takes values around the point.
