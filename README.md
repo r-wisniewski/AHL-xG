@@ -16,16 +16,22 @@ Before you begin, step your SQL database. Note the lines
 ```
 are commented out in the python scripts.
 
+
+
 1. The first step is scraping data from the AHL website.
 The ahl_xgf_sql_scrape.py script gets all x,y shot & goal locations from the AHL website and puts it into a sql table named 'ahlxgf'. This table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
 ```
 command: python ahl_xgf_sql_scrape.py <latestGameID#>
 ```
+Where the <latestGameID#> can be found by going to theahl.com website, finding the most recent completed game and extracting the game ID from the URL
+```
+for example, the game ID for this URL: https://theahl.com/stats/game-center/1019145 is 1019145
+```
 
 2. With the data in a SQL database, we can calulate the xG of individual x,y locations. The ahl_xgf_sql_smoothing.py script ONLY calculates xG based on that particular x,y point. Subsequently, a smoothing box of size x +/- var,y +/- var (with var > 1) parses each x,y coordinate. This results in lower peaks but
 higher valleys. The 'ahlxgfCalc' tables needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
 ```
-command: python ahl_xgf_sql_smoothing.py <latestGameID#>
+command: python ahl_xgf_sql_smoothing.py
 ```
 Important note: This branch takes into account strengths (ie, even strength, 5v4 PP, etc...). 
 | Table Name    | Strengths (numerical) | Strenghts represented |
@@ -49,7 +55,7 @@ command: python ahl_xgf_sql_accuracy.py <latestGameID#>
 ```
 E.g., All four scripts can be run back to back
 ```
-python ahl_xgf_sql_scrape.py <latestGameID#>; python ahl_xgf_sql_smoothing.py <latestGameID#>; python xg_plot.py; python ahl_xgf_sql_accuracy.py <latestGameID#>
+python ahl_xgf_sql_scrape.py <latestGameID#>; python ahl_xgf_sql_smoothing.py; python xg_plot.py; python ahl_xgf_sql_accuracy.py <latestGameID#>
 ```
 
 # Dependencies
