@@ -1,9 +1,9 @@
 # AHL-xG
 
 # Purpose
-Hockey analytics are a hot topic these days and with the incrediblty rich publically available data for each NHL game, its incredible to see what information is able to be extracted. With the AHL and CHL, an analyst unfortunately does not have access to databases containing vast amounts of data. With that limitation in mind, my goal with this project is to see how accurately I could predict the expected goals (xG) for a shot in the AHL, or in the CHL, based only off of the x and y location of that shot. 
+Hockey analytics are a hot topic these days and with the incrediblty rich publically available data for each NHL game, its incredible to see what information is can be extracted. With the AHL and CHL, an analyst unfortunately does not have access to public databases containing vast amounts of rich data. With that limitation in mind, my goal with this project is to see how accurately I could predict the expected goals (xG) for a shot in the AHL, or in the CHL, based on the x and y location of that shot combined with the strength. 
 
-This project will focus on the AHL; however, the CHL website store game information in the exact same format. With very slight modification, one could modify the scripts to work for the CHL as well.
+This project will focus on the AHL; however, the CHL website stores game information in the exact same format. With very slight modification to the code in this project, one could modify the scripts to work for the CHL as well.
 
 # Method
 Before you begin, step your SQL database. Note the lines 
