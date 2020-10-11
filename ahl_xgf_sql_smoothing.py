@@ -92,12 +92,16 @@ for i in range(0,5):
         matching_records = cursor.fetchall()
         goal = 0
         num_rows = len(matching_records) 
-        for row in matching_records:
-            if row[2] == 1:
-                goal += 1
+        #num_rows == 0 just means we have no events at x,y; therefore xG = 0
         if num_rows == 0:
             xG = 0
+        #otherwise, take the # of goals and divide by total events
+        #e.g., 3 goals / 10 total events ==> xG = 0.3
         else:
+            for row in matching_records:
+                # if this row is a goal, add one to the goal variable
+                if row[2] == 1:
+                    goal += 1
             xG = goal/num_rows
         print("Expected goals for (%i , %i) is %6.5f at strength %i" % (record[0],record[1],xG,i-2))
         #insert the calculated xG into the appropriate strength table for this record
@@ -118,14 +122,18 @@ for i in range(0,5):
     #Smooth out each calculated data point with a averaging function that takes values around the point.
     #The swatch is var*2 wide and high
     for unsmoothed_record in records:
+        xG_collected = 0
         var = 30
         query = '''SELECT * FROM %s WHERE XLocation BETWEEN %%s AND %%s INTERSECT SELECT * FROM %s WHERE YLocation BETWEEN %%s AND %%s;'''
         cursor.execute(query % (table_name, table_name), [unsmoothed_record[0]-var,unsmoothed_record[0]+var,unsmoothed_record[1]-var,unsmoothed_record[1]+var])
         unsmoothed_match = cursor.fetchall()
         num_matches = len(unsmoothed_match)
-        for val in unsmoothed_match:
-            xG += val[2]
-        xG = xG/num_matches
+        if num_matches == 0:
+            xG = 0
+        else:
+            for val in unsmoothed_match:
+                xG_collected += val[2]
+            xG = xG_collected/num_matches
         inserting = '''UPDATE %s SET xG = %%s WHERE (XLocation) = (%%s) AND (YLocation) = (%%s);'''
         cursor.execute(inserting % table_name, [xG,unsmoothed_record[0],unsmoothed_record[1]])
         connection.commit()
