@@ -109,6 +109,9 @@ for i in range(0,5):
         cursor.execute(insert_query % table_name, [xG,record[0],record[1]])
         connection.commit()
 
+#variable sized smoothing swath for different strengths
+smoothing_swath = [10,30,30,30,10]
+
 for i in range(0,5):
     #set the table name here
     table_name = "ahlxgCalc"+str(i)
@@ -118,12 +121,12 @@ for i in range(0,5):
     records = cursor.fetchall()
     
     xG = 0
+    var = smoothing_swath[i]
 
     #Smooth out each calculated data point with a averaging function that takes values around the point.
     #The swatch is var*2 wide and high
     for unsmoothed_record in records:
         xG_collected = 0
-        var = 30
         query = '''SELECT * FROM %s WHERE XLocation BETWEEN %%s AND %%s INTERSECT SELECT * FROM %s WHERE YLocation BETWEEN %%s AND %%s;'''
         cursor.execute(query % (table_name, table_name), [unsmoothed_record[0]-var,unsmoothed_record[0]+var,unsmoothed_record[1]-var,unsmoothed_record[1]+var])
         unsmoothed_match = cursor.fetchall()
