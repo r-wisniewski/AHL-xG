@@ -209,12 +209,24 @@ for n in range(first_game_id,last_game+1,1):
                 yLocation = details.get("yLocation")
                 yLocation = 300 - yLocation
 
+                #get the team id of the goal scorer
+                team_id = details.get("team")
+                team_id = int(team_id.get("id"))
+
                 #get time of goal and match to strength
                 time_raw = details.get("time").split(":")
                 period = details.get("period")
                 period = int(period.get("id"))
                 event_time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
-                event_strength = strengths[event_time,1]
+
+                #if the team who shot on net or scored is Team1, set strength equal to the strength array 
+                #if the team who shot on net or scored is Team1, set strength to the inverse of the strength array
+                if team_id == Team1:
+                    event_strength = strengths[event_time,1]
+                    event_strength = int(event_strength)
+                else:
+                    event_strength = strengths[event_time,1]
+                    event_strength = -int(event_strength)
 
                 table_name = ahlxgCalc+str(event_strength)
 
@@ -243,12 +255,23 @@ for n in range(first_game_id,last_game+1,1):
                 yLocation = details.get("yLocation")
                 yLocation = 300 - yLocation
 
-                #get time of goal and match to strength
+                #get the team id of the shooter
+                team_id = int(details.get("shooterTeamId"))
+
+                #get time of goal or shot and match to strength
                 time_raw = details.get("time").split(":")
                 period = details.get("period")
                 period = int(period.get("id"))
                 event_time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
-                event_strength = strengths[event_time,1]
+
+                #if the team who shot on net or scored is Team1, set strength equal to the strength array 
+                #if the team who shot on net or scored is Team1, set strength to the inverse of the strength array
+                if team_id == Team1:
+                    event_strength = strengths[event_time,1]
+                    event_strength = int(event_strength)
+                else:
+                    event_strength = strengths[event_time,1]
+                    event_strength = -int(event_strength)
 
                 table_name = ahlxgCalc+str(event_strength+2)
                 
