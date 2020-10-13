@@ -81,7 +81,7 @@ for n in range(first_game_id,last_game+1,1):
 
         #Team1 is the team that the strengths will be calculated for
         #Team2 is just the inverse of Team1
-        #ie, if Team1 is on the PP (strength = +1), Team2 must have strength == -1 (5v4 PK)
+        #ie, if Team1 is on the PP (strength = +1), Team2 must have the inverse strength == -1 (5v4 PK)
         team = []
         for i in resp:
             event = i.get("event")
@@ -206,13 +206,27 @@ for n in range(first_game_id,last_game+1,1):
                 yLocation = 300 - yLocation
                 isGoal = details.get("isGoal")
 
+                #get the team id of the shooter
+                if event == "goal":
+                    team_id = details.get("team")
+                    team_id = int(team_id.get("id"))
+                elif event == "shot":
+                    team_id = int(details.get("shooterTeamId"))
+
                 #get time of goal or shot and match to strength
                 time_raw = details.get("time").split(":")
                 period = details.get("period")
                 period = int(period.get("id"))
                 event_time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
-                event_strength = strengths[event_time,1]
-                event_strength = int(event_strength)
+
+                #if the team who shot on net or scored is Team1, set strength equal to the strength array 
+                #if the team who shot on net or scored is Team1, set strength to the inverse of the strength array
+                if team_id == Team1:
+                    event_strength = strengths[event_time,1]
+                    event_strength = int(event_strength)
+                else:
+                    event_strength = strengths[event_time,1]
+                    event_strength = -int(event_strength)
 
                 values = """ INSERT INTO ahlxgf (XLocation, YLocation, Goal, Strength) VALUES (%s,%s,%s,%s)"""
                 cursor.execute(values, (xLocation,yLocation,isGoal,event_strength))
