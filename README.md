@@ -36,11 +36,11 @@ command: python ahl_xgf_sql_smoothing.py
 Important note: This branch takes into account strengths (ie, even strength, 5v4 PP, etc...). 
 | Table Name    | Strengths (numerical) | Strenghts represented |
 | ------------- | --- | --------------------- |
-| ahlxgfCalc0   | -2 | 3v5, down by 2 players  |
-| ahlxgfCalc1   | -1 | 4v5, down by 1 player |
-| ahlxgfCalc2   | 0 | 5v5, even strength  |
-| ahlxgfCalc3   | +1 | 5v4 or 4v3, up by 1 player |
-| ahlxgfCalc4   | +2 | 5v3, up by 2 players  |
+| ahlxgcalc0   | -2 | 3v5, down by 2 players  |
+| ahlxgcalc1   | -1 | 4v5, down by 1 player |
+| ahlxgcalc2   | 0 | 5v5, even strength  |
+| ahlxgcalc3   | +1 | 5v4 or 4v3, up by 1 player |
+| ahlxgcalc4   | +2 | 5v3, up by 2 players  |
 
 3. This step is OPTIONAL, use the xg_plot.py to display the results of step 2. The heat map will visually show the xG values. 
 ```
@@ -64,7 +64,7 @@ python ahl_xgf_sql_scrape.py <latestGameID#>; python ahl_xgf_sql_smoothing.py; p
 ```
 pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
 ```
-2. A postgres SQL Database is required.
+2. A postgres [SQL Database](https://www.postgresql.org/download/linux/) is required.
 3. A SQL GUI such as [Sqlectron](https://sqlectron.github.io/).
 
 
