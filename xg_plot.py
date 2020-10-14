@@ -24,7 +24,7 @@ except (Exception, psycopg2.Error) as error :
 
 for i in range(0,5):
     #set the table name here
-    table_name = "ahlxgCalc"+str(i)
+    table_name = "ahlxgcalc"+str(i)
 
     #Grab every xG row/datapoint from the database
     cursor.execute("SELECT * FROM %s;" % table_name)

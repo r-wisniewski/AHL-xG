@@ -33,7 +33,7 @@ except (Exception, psycopg2.Error) as error :
 #### Save code with using a for loop + formatted string (potential security issue)
 for i in range(0,5):
     #set the table name here
-    table_name = "ahlxgCalc"+str(i)
+    table_name = "ahlxgcalc"+str(i)
 
     try:
         cursor.execute("DROP TABLE %s;" % table_name)
@@ -46,7 +46,7 @@ for i in range(0,5):
 #ahlxgCalc0 == table for strength -2, ahlxgCalc1 == table for strength -1 ... ahlxgCalc4 == table for strength +2
 for i in range(0,5):
     #set the table name here
-    table_name = "ahlxgCalc"+str(i)
+    table_name = "ahlxgcalc"+str(i)
 
     try:
         create_table = '''CREATE TABLE %s ( 
@@ -65,7 +65,7 @@ events = Table.read_table("input_simple.csv")
 #populate each ahlxgCalc table w/ datapoints from CSV
 for i in range(0,5):
     #set the table name here
-    table_name = "ahlxgCalc"+str(i)
+    table_name = "ahlxgcalc"+str(i)
     print("Populating %s with all x,y points" % table_name)
     for event_row in events.rows:
         values = """INSERT INTO %s (XLocation, YLocation) VALUES (%%s,%%s)"""
@@ -73,7 +73,7 @@ for i in range(0,5):
 
 for i in range(0,5):
     #set the table name here
-    table_name = "ahlxgCalc"+str(i)
+    table_name = "ahlxgcalc"+str(i)
     
     #Grab every datapoint from the database and run the calculation for each stregnth
     query = cursor.execute("SELECT * FROM %s;" % table_name)
@@ -110,11 +110,11 @@ for i in range(0,5):
         connection.commit()
 
 #variable sized smoothing swath for different strengths
-smoothing_swath = [10,30,30,30,10]
+smoothing_swath = [5,30,30,30,10]
 
 for i in range(0,5):
     #set the table name here
-    table_name = "ahlxgCalc"+str(i)
+    table_name = "ahlxgcalc"+str(i)
 
     #Grab every datapoint from the database and run the calculation for each stregnth
     query = cursor.execute("SELECT * FROM %s;" % table_name)

@@ -228,7 +228,7 @@ for n in range(first_game_id,last_game+1,1):
                     event_strength = strengths[event_time,1]
                     event_strength = -int(event_strength)
 
-                table_name = ahlxgCalc+str(event_strength)
+                table_name = "ahlxgcalc"+str(event_strength+2)
 
                 #get the xG from the correct strength table
                 query = """ SELECT xG FROM %s WHERE XLocation = %%s AND YLocation = %%s """
@@ -273,7 +273,7 @@ for n in range(first_game_id,last_game+1,1):
                     event_strength = strengths[event_time,1]
                     event_strength = -int(event_strength)
 
-                table_name = ahlxgCalc+str(event_strength+2)
+                table_name = "ahlxgcalc"+str(event_strength+2)
                 
                 #get the xG from the correct strength table
                 query = """ SELECT xG FROM %s WHERE XLocation = %%s AND YLocation = %%s """
