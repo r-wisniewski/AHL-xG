@@ -1,4 +1,4 @@
-# AHL-xG
+﻿# AHL-xG
 
 # Purpose
 Hockey analytics are a hot topic these days and with the incrediblty rich publically available data for each NHL game, its incredible to see what information is can be extracted. With the AHL and CHL, an analyst unfortunately does not have access to public databases containing vast amounts of rich data. With that limitation in mind, my goal with this project is to see how accurately I could predict the expected goals (xG) for a shot in the AHL, or in the CHL, based on the x and y location of that shot combined with the strength. 
@@ -67,6 +67,28 @@ pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktnik
 2. A postgres [SQL Database](https://www.postgresql.org/download/linux/) is required.
 3. A SQL GUI such as [Sqlectron](https://sqlectron.github.io/).
 
+# Testing to reduce error
+
+The tests to reduce error were simple tests ran against a 76 game in sample dataset. From these tests the average goals per game error and the mean squared error were calculcated to determine which smoothing swath combination was the most adequate. The table below lists the results of those tests:
+
+| swath size (-2) | swath size (-1) | swath size (0) | swath size (+1) | swath size (+2) |Avg Error | MSE |
+| ---- | --------- | ---------- | --------- | ---------- | ---------- | --------- |
+| 10x10 | 60x60 | 70x70 | 56x56 | 16x16 | 1.09 | 6.21 |
+| 10x10 | 60x60 | 60x60 | 60x60 | 10x10 | 1.32 | 6.90 | 
+| 10x10 | 50x50 | 50x50 | 50x50 | 16x16 | 1.65 | 8.04 | 
+
+
+Note: The first 5 columns (from the left) represent the smooth swath sizes for a particular strength. e.g., the furthest column to the left titled “swath size (-2)” represents the swath size for strength -2 on a particular test run.
+
+# Results
+
+## In Sample Error
+
+In progress.
+
+## Out of Sample Prediction
+
+In progress.
 
 # Future Work
 
