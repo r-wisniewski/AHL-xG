@@ -100,4 +100,4 @@ I would greatly appreciate feedback regarding this code. This project is far fro
 
 # Contact
 
-Robin Wisniewski – [wisniewski.ro@gmail.com](mailto:wisniewski.ro@gmail.com)
+Robin Wisniewski – [LinkedIn](https://www.linkedin.com/in/robin-wisniewski/) –  [wisniewski.ro@gmail.com](mailto:wisniewski.ro@gmail.com)
