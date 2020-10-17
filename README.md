@@ -5,8 +5,22 @@ Hockey analytics are a hot topic these days and with the incrediblty rich public
 
 This project will focus on the AHL; however, the CHL website stores game information in the exact same format. With very slight modification to the code in this project, one could modify the scripts to work for the CHL as well.
 
-# Method
-Before you begin, step your SQL database. Note the lines 
+# Getting started
+
+Packages required and SQL DB setup.
+
+## Prerequisites 
+
+1. Python3 with packages requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
+```
+pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
+```
+2. A postgres [SQL Database](https://www.postgresql.org/download/linux/) is required.
+3. A SQL GUI such as [Sqlectron](https://sqlectron.github.io/).
+
+## SQL DB Setup
+
+Before you begin, step a SQL database. Note the lines 
 ```
     connection = psycopg2.connect(user = <insert username>,
                                   password = <insert password>,
@@ -14,12 +28,12 @@ Before you begin, step your SQL database. Note the lines
                                   port = <insert sql server port number>,
                                   database = <insert database name>)
 ```
-are commented out in the python scripts.
+are commented out in the python scripts. Replace the angle brackets in the above statement with your SQL DB’s information.
 
-
+# Usage
 
 1. The first step is scraping data from the AHL website.
-The ahl_xgf_sql_scrape.py script gets all x,y shot & goal locations from the AHL website and puts it into a sql table named 'ahlxgf'. This table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
+The ahl_xgf_sql_scrape.py script gets all x,y shot & goal locations at a certain strength from the AHL website and puts it into a sql table named 'ahlxgf'. On the first run of the script, I’d recommend commentting out the lines that drop the table.
 ```
 command: python ahl_xgf_sql_scrape.py <latestGameID#>
 ```
@@ -28,8 +42,7 @@ Where the <latestGameID#> can be found by going to theahl.com website, finding t
 for example, the game ID for this URL: https://theahl.com/stats/game-center/1019145 is 1019145
 ```
 
-2. With the data in a SQL database, we can calulate the xG of individual x,y locations. The ahl_xgf_sql_smoothing.py script ONLY calculates xG based on that particular x,y point. Subsequently, a smoothing box of size x +/- var,y +/- var (with var > 1) parses each x,y coordinate. This results in lower peaks but
-higher valleys. The 'ahlxgfCalc' tables needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
+2. With the data in a SQL database, we can calulate the xG of individual x,y locations for each strength. The ahl_xgf_sql_smoothing.py script calculates xG based on that particular x,y point. To reduce peaks and bring valleys up in the xG calculations, a smoothing box of size x +/- var,y +/- var (with var > 1) parses each x,y coordinate. On the first run of the script, I’d recommend commentting out the lines that drop the table.
 ```
 command: python ahl_xgf_sql_smoothing.py
 ```
@@ -42,14 +55,14 @@ Important note: This branch takes into account strengths (ie, even strength, 5v4
 | ahlxgcalc3   | +1 | 5v4 or 4v3, up by 1 player |
 | ahlxgcalc4   | +2 | 5v3, up by 2 players  |
 
-3. This step is OPTIONAL, use the xg_plot.py to display the results of step 2. The heat map will visually show the xG values. 
+3. This step is OPTIONAL, use the xg_plot.py to display the results of step 2. The heat map will visually show the xG values for each strength. 
 ```
 command: python xg_plot.py
 ```
 Here's what an example heatmap looks like:
 ![Heatmap](https://i.imgur.com/wwf9Zyf.png)
 
-4. The fourth, last, and most important step. Run the ahl_xgf_sql_accuracy.py script to compare the actual game score vs what the xG predicts it to be. The 'ahlxgfaccuracy' table needs to be created in the sql database you connect to as it is initially dropped. Conversely, you could comment out the lines that drop the table the first run of the script.
+4. The fourth, last, and most important step. Run the ahl_xgf_sql_accuracy.py script to compare the actual game score vs what the xG predicts it to be. On the first run of the script, I’d recommend commentting out the lines that drop the table.
 ```
 command: python ahl_xgf_sql_accuracy.py <latestGameID#>
 ```
@@ -57,15 +70,6 @@ E.g., All four scripts can be run back to back
 ```
 python ahl_xgf_sql_scrape.py <latestGameID#>; python ahl_xgf_sql_smoothing.py; python xg_plot.py; python ahl_xgf_sql_accuracy.py <latestGameID#>
 ```
-
-# Dependencies
-
-1. Python3 with packages requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
-```
-pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
-```
-2. A postgres [SQL Database](https://www.postgresql.org/download/linux/) is required.
-3. A SQL GUI such as [Sqlectron](https://sqlectron.github.io/).
 
 # Testing to reduce error
 
@@ -93,3 +97,7 @@ In progress.
 # Future Work
 
 I would greatly appreciate feedback regarding this code. This project is far from perfect and could definitely be fine tuned in many many ways. 
+
+# Contact
+
+Robin Wisniewski – [wisniewski.ro@gmail.com](mailto:wisniewski.ro@gmail.com)
