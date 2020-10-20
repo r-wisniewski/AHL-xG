@@ -46,7 +46,6 @@ for example, the game ID for this URL: https://theahl.com/stats/game-center/1019
 ```
 command: python ahl_xgf_sql_smoothing.py
 ```
-Important note: This branch takes into account strengths (ie, even strength, 5v4 PP, etc...). 
 | Table Name    | Strengths (numerical) | Strenghts represented |
 | ------------- | --- | --------------------- |
 | ahlxgcalc0   | -2 | 3v5, down by 2 players  |
@@ -71,24 +70,21 @@ E.g., All four scripts can be run back to back
 python ahl_xgf_sql_scrape.py <latestGameID#>; python ahl_xgf_sql_smoothing.py; python xg_plot.py; python ahl_xgf_sql_accuracy.py <latestGameID#>
 ```
 
-# Testing to reduce error
+# Results
+
+## In Sample Error
 
 The tests to reduce error were simple tests ran against a 76 game in sample dataset. From these tests the average goals per game error and the mean squared error were calculcated to determine which smoothing swath combination was the most adequate. The table below lists the results of those tests:
 
 | swath size (-2) | swath size (-1) | swath size (0) | swath size (+1) | swath size (+2) |Avg Error | MSE |
 | ---- | --------- | ---------- | --------- | ---------- | ---------- | --------- |
+| 10x10 | 60x60 | 78x78 | 56x56 | 16x16 | 0.89 | 5.74 |
 | 10x10 | 60x60 | 70x70 | 56x56 | 16x16 | 1.09 | 6.21 |
 | 10x10 | 60x60 | 60x60 | 60x60 | 10x10 | 1.32 | 6.90 | 
 | 10x10 | 50x50 | 50x50 | 50x50 | 16x16 | 1.65 | 8.04 | 
 
 
 Note: The first 5 columns (from the left) represent the smooth swath sizes for a particular strength. e.g., the furthest column to the left titled “swath size (-2)” represents the swath size for strength -2 on a particular test run.
-
-# Results
-
-## In Sample Error
-
-In progress.
 
 ## Out of Sample Prediction
 
