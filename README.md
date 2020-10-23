@@ -78,10 +78,7 @@ The tests to reduce error were simple tests ran against a 76 game in sample data
 
 | swath size (-2) | swath size (-1) | swath size (0) | swath size (+1) | swath size (+2) |Avg Error | MSE |
 | ---- | --------- | ---------- | --------- | ---------- | ---------- | --------- |
-| 10x10 | 60x60 | 78x78 | 56x56 | 16x16 | 0.89 | 5.74 |
-| 10x10 | 60x60 | 70x70 | 56x56 | 16x16 | 1.09 | 6.21 |
-| 10x10 | 60x60 | 60x60 | 60x60 | 10x10 | 1.32 | 6.90 | 
-| 10x10 | 50x50 | 50x50 | 50x50 | 16x16 | 1.65 | 8.04 | 
+| 10x10 | 60x60 | 78x78 | 56x56 | 16x16 | 7.034 | 54.84 |
 
 
 Note: The first 5 columns (from the left) represent the smooth swath sizes for a particular strength. e.g., the furthest column to the left titled “swath size (-2)” represents the swath size for strength -2 on a particular test run.

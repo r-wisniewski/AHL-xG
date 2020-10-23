@@ -71,77 +71,40 @@ for i in range(0,5):
         values = """INSERT INTO %s (XLocation, YLocation) VALUES (%%s,%%s)"""
         cursor.execute(values % table_name, [int(event_row[0]),int(event_row[1])])
 
+#variable sized smoothing swaths for different strengths
+smoothing_swath = [5,30,39,28,8]
+
 for i in range(0,5):
     #set the table name here
     table_name = "ahlxgcalc"+str(i)
-    
+
     #Grab every datapoint from the database and run the calculation for each stregnth
     query = cursor.execute("SELECT * FROM %s;" % table_name)
     records = cursor.fetchall()
-    
+
+    var = smoothing_swath[i]
     xG = 0
-    
-    # Grab each datapoint and grab the N nearest neighbors from the database while separating out strengths
-    # From the N nearest neighbors, calculate
-    # record[1] == y value. From 0 (left) to 300 (right). Left and right of the goalie
-    # record[0] == x value. Out from the net. 0 to max
+    #Smooth out each calculated data point with a averaging function that takes values around the point.
+    #The swath is var*2 wide and high
     for record in records:
-        #xG's calculated using only data at that particular point
-        query = '''SELECT * FROM ahlxgf WHERE XLocation = %s INTERSECT SELECT * FROM ahlxgf WHERE YLocation = %s INTERSECT SELECT * FROM ahlxgf WHERE Strength = %s;'''
-        cursor.execute(query, (record[0],record[1],i-2))
-        matching_records = cursor.fetchall()
         goal = 0
-        num_rows = len(matching_records) 
-        #num_rows == 0 just means we have no events at x,y; therefore xG = 0
+        query = '''SELECT * FROM ahlxgf WHERE XLocation BETWEEN %s AND %s INTERSECT SELECT * FROM ahlxgf WHERE YLocation BETWEEN %s AND %s INTERSECT SELECT * FROM ahlxgf WHERE Strength = %s;'''
+        cursor.execute(query % (record[0]-var,record[0]+var,record[1]-var,record[1]+var,i-2))
+        matching_records = cursor.fetchall()
+        num_rows = len(matching_records)
         if num_rows == 0:
             xG = 0
-        #otherwise, take the # of goals and divide by total events
-        #e.g., 3 goals / 10 total events ==> xG = 0.3
         else:
             for row in matching_records:
                 # if this row is a goal, add one to the goal variable
                 if row[2] == 1:
                     goal += 1
             xG = goal/num_rows
-        print("Expected goals for (%i , %i) is %6.5f at strength %i" % (record[0],record[1],xG,i-2))
-        #insert the calculated xG into the appropriate strength table for this record
-        insert_query = '''UPDATE %s SET xG = %%s WHERE (XLocation) = (%%s) AND (YLocation) = (%%s);'''
-        cursor.execute(insert_query % table_name, [xG,record[0],record[1]])
-        connection.commit()
-
-#variable sized smoothing swath for different strengths
-smoothing_swath = [5,30,30,30,10]
-
-for i in range(0,5):
-    #set the table name here
-    table_name = "ahlxgcalc"+str(i)
-
-    #Grab every datapoint from the database and run the calculation for each stregnth
-    query = cursor.execute("SELECT * FROM %s;" % table_name)
-    records = cursor.fetchall()
-    
-    xG = 0
-    var = smoothing_swath[i]
-
-    #Smooth out each calculated data point with a averaging function that takes values around the point.
-    #The swatch is var*2 wide and high
-    for unsmoothed_record in records:
-        xG_collected = 0
-        query = '''SELECT * FROM %s WHERE XLocation BETWEEN %%s AND %%s INTERSECT SELECT * FROM %s WHERE YLocation BETWEEN %%s AND %%s;'''
-        cursor.execute(query % (table_name, table_name), [unsmoothed_record[0]-var,unsmoothed_record[0]+var,unsmoothed_record[1]-var,unsmoothed_record[1]+var])
-        unsmoothed_match = cursor.fetchall()
-        num_matches = len(unsmoothed_match)
-        if num_matches == 0:
-            xG = 0
-        else:
-            for val in unsmoothed_match:
-                xG_collected += val[2]
-            xG = xG_collected/num_matches
         inserting = '''UPDATE %s SET xG = %%s WHERE (XLocation) = (%%s) AND (YLocation) = (%%s);'''
-        cursor.execute(inserting % table_name, [xG,unsmoothed_record[0],unsmoothed_record[1]])
+        cursor.execute(inserting % table_name, [xG,record[0],record[1]])
         connection.commit()
-        print("Smoothed Expected goals for (%i , %i) is %6.5f at strength %i" % (unsmoothed_record[0],unsmoothed_record[1],xG,i-2))
-
+        print("Smoothed Expected goals for (%i , %i) is %6.5f at strength %i" % (record[0],record[1],xG,i-2))
+        
 #closing database connection.
 if(connection):
     cursor.close()
