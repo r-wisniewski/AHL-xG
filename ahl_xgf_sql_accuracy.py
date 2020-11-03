@@ -289,6 +289,19 @@ for n in range(first_game_id,last_game+1,1):
         print("Game ID: %i, xG: %f, Goals: %i, Diff: %f" % (n,total_expected_goals,game_goals,diff))
     except:
         pass
+        
+#Calculate Avg goals/game error and MSE
+cursor.execute("SELECT * from ahlxgfaccuracy;")
+query = cursor.fetchall()
+avg_error = 0
+MSE = 0
+for diff in query:
+    avg_error += diff[3]
+    MSE += diff[3]*diff[3]
+results = len(query)
+avg_error = avg_error/results
+MSE = MSE/results
+print("Average goals per game error is: %6.5f and the MSE is: %6.5f" % (avg_error, MSE))
 
 #closing database connection.
 if(connection):
