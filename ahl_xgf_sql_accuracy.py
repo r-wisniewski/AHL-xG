@@ -309,10 +309,13 @@ results = len(query)
 avg_error = avg_error/results
 MSE = MSE/results
 print("Average goals per game error is: %6.5f and the MSE is: %6.5f" % (avg_error, MSE))
+
+# plot a histogram of the error
 plt.xlabel('Error (goals/game)')
 plt.ylabel('Number of results')
 plt.title('Histogram of the error (goals/game)')
 plt.hist(hist_list)
+plt.axvline(avg_error, color='r', linestyle='dashed', linewidth=1)
 plt.show()
 
 
