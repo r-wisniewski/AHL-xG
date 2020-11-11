@@ -1,7 +1,7 @@
 """
 Usage: python ahl_xgf_sql_accuracy.py 
 
-Test out how accurate the xG caluclation is compared to a games actual result
+Calculate how accurate the xG caluclation is compared to an actual game result
 """
 
 import requests
@@ -9,6 +9,11 @@ import json
 import psycopg2
 import sys
 import numpy as np
+import tkinter
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import pandas
 
 #build dataset with data from first game w/ shot and goal data
 #Game is from Oct 6, 2017
@@ -291,17 +296,25 @@ for n in range(first_game_id,last_game+1,1):
         pass
         
 #Calculate Avg goals/game error and MSE
+hist_list = []
 cursor.execute("SELECT * from ahlxgfaccuracy;")
 query = cursor.fetchall()
 avg_error = 0
 MSE = 0
 for diff in query:
+    hist_list.append(diff[3])
     avg_error += diff[3]
     MSE += diff[3]*diff[3]
 results = len(query)
 avg_error = avg_error/results
 MSE = MSE/results
 print("Average goals per game error is: %6.5f and the MSE is: %6.5f" % (avg_error, MSE))
+plt.xlabel('Error (goals/game)')
+plt.ylabel('Number of results')
+plt.title('Histogram of the error (goals/game)')
+plt.hist(hist_list)
+plt.show()
+
 
 #closing database connection.
 if(connection):
