@@ -13,10 +13,9 @@ Packages required and SQL DB setup.
 
 1. Python3 with packages requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
 ```
-pip install requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
+pip install -r requirements.txt
 ```
 2. A postgres [SQL Database](https://www.postgresql.org/download/linux/) is required.
-3. A SQL GUI such as [Sqlectron](https://sqlectron.github.io/).
 
 ## SQL DB Setup
 
