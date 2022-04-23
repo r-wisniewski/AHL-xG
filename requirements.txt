@@ -1,0 +1,8 @@
+requests
+json
+psycopg2
+datascience
+matplotlib
+numpy
+ktniker
+tqdm
