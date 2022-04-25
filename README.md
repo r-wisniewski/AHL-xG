@@ -11,11 +11,15 @@ Packages required and SQL DB setup.
 
 ## Prerequisites 
 
-1. Python3 with packages requests, json, psycopg2, sys, datascience, matplotlib, numpy, ktniker
+1. Python3 with packages requests, psycopg2, datascience, matplotlib, numpy
 ```
 pip install -r requirements.txt
 ```
-2. A postgres [SQL Database](https://www.postgresql.org/download/linux/) is required.
+2. Install tkinter
+```
+sudo apt-get install python-tk
+```
+3. A postgres [SQL Database](https://www.postgresql.org/download/linux/) is required.
 
 ## SQL DB Setup
 
