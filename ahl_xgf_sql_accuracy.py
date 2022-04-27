@@ -133,13 +133,14 @@ def request_url(url:str) -> None:
 
             if event == "penalty":
                 time_raw = i['details']['time'].split(":")
-                period = int(i['details']['period']['id'])
+                period = i['details']['period']['id']
+                period = int(period)
                 #get time in seconds of the penalty
                 time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
                 length = i['details']['minutes'].split(".")
                 length = int(length[0])
-
-                against_team = int(i['details']['againstTeam']['id'])
+                against_team = i['details']['againstTeam']['id']
+                against_team = int(against_team)
                 #Team1 goes on the PP
                 if against_team == Team2:
                     if length == 2:
@@ -170,12 +171,15 @@ def request_url(url:str) -> None:
             
             #we only care about PP goals becuase SH or EV goals don't change strength
             elif event == "goal":
-                pp_goal = int(i['details']['properties']['isPowerPlay'])
-                team_id = int(i['details']['team']['id'])
+                pp_goal = i['details']['properties']['isPowerPlay']
+                pp_goal = int(pp_goal)
+                team_id = i['details']['team']['id']
+                team_id = int(team_id)
                 if pp_goal == 1:
                     #time of goal in seconds
                     time_raw = i['details']['time'].split(":")
-                    period = int(i['details']['period']['id'])
+                    period = i['details']['period']['id']
+                    period = int(period)
                     time_of_goal = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
 
                     #time of previous penalty + length of penalty is last_penalty_time
@@ -212,11 +216,13 @@ def request_url(url:str) -> None:
                 yLocation = 300 - yLocation
 
                 #get the team id of the goal scorer
-                team_id = int(i['details']['team']['id'])
+                team_id = i['details']['team']['id']
+                team_id = int(team_id)
 
                 #get time of goal and match to strength
                 time_raw = i['details']['time'].split(":")
-                period = int(i['details']['period']['id'])
+                period = i['details']['period']['id']
+                period = int(period)
                 event_time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
 
                 #if the team who shot on net or scored is Team1, set strength equal to the strength array 
@@ -253,12 +259,14 @@ def request_url(url:str) -> None:
                 yLocation = i['details']['yLocation']
                 yLocation = 300 - yLocation
 
-                #get the team id of the shooter
-                team_id = int(i['details']['shooterTeamId'])
+                #get the team id of the goal scorer
+                team_id = i['details']['team']['id']
+                team_id = int(team_id)
 
-                #get time of goal or shot and match to strength
+                #get time of goal and match to strength
                 time_raw = i['details']['time'].split(":")
-                period = int(i['details']['period']['id'])
+                period = i['details']['period']['id']
+                period = int(period)
                 event_time = ((period-1) * 20 * 60) + (int(time_raw[0]) * 60) + int(time_raw[1])
 
                 #if the team who shot on net or scored is Team1, set strength equal to the strength array 
